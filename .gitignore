@@ -1,0 +1,41 @@
+# Dependencies & Build
+node_modules/
+dist/
+build/
+android/app/build
+android/.gradle
+bin/
+
+# Capacitor & Android Specs
+android/local.properties
+android/app/src/main/assets/public
+*.apk
+*.aab
+*.ipa
+*.dmg
+*.xcarchive
+*.keystore
+android/captures/
+
+# iOS & Capacitor
+ios/App/Pods/
+ios/App/build/
+ios/App/build-output/
+ios/App/.build/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/Podfile.lock
+
+# Logs
+*.log
+npm-debug.log*
+*.hprof
+
+# OS & IDEs
+.DS_Store
+.vscode/
+.idea/
+*.iml
+
+# Tauri Desktop Build
+src-tauri/target/
+src-tauri/gen/
