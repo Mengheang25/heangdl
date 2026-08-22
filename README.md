@@ -32,228 +32,117 @@ HEANG D.L is a fast and simple downloader for saving videos, photos, and music f
   <img src="assets/6.png" width="30%">
 </p>
 
-## What's New in v4.2.0
+# HEANG D.L
 
-- **macOS & Windows Desktop Support (Tauri v2)**: Added native desktop application support for macOS (`.dmg`, `.app`) and Windows (`.exe`, `.msi`) powered by Tauri v2.
-- **Native CORS-Free Desktop HTTP Engine**: Integrated native Rust HTTP client (`tauri_http_request` & `tauri_fetch_bytes` via `reqwest`) to handle cross-origin network requests and binary file streaming on Desktop, eliminating WebKit CORS blocks and header restriction errors (`Load failed`).
-- **Native Desktop File Saving**: Implemented direct Rust disk writers (`tauri_download_file` & `tauri_save_bytes_file`), automatically saving downloaded media files and exported PDF galleries directly to the user's native Downloads folder (`~/Downloads/HEANG D.L/` on macOS, `C:\Users\<Username>\Downloads\HEANG D.L\` on Windows).
-- **Desktop Native Browser Launcher & Auto-Update Engine**: Integrated native Rust URL process launcher (`tauri_open_url`) and semantic version comparison (`isNewerVersion`), ensuring "UPDATE" and "Report Bug" links launch directly in the user's default desktop browser (Safari/Chrome/Arc) without WKWebView pop-up blocks. Fixed `autoCheckUpdate()` and `checkUpdate()` on macOS Desktop by parsing Rust HTTP response objects (`res.data`).
-- **Pixiv Ugoira Live MP4 Video Preview**: Fixed Pixiv Ugoira (animated illustration) preview playback on macOS/Windows Desktop. Integrated native Rust CORS-bypass streaming (`tauri_fetch_bytes`) with custom `Referer: https://www.pixiv.net/` headers to fetch and loop MP4 video animations smoothly inside the preview modal.
-- **Cross-Platform PDF Gallery Exporter**: Resolved `undefined is not an object (evaluating 'CapacitorHttp.get')` and `CHROME_UA` reference errors during PDF generation on Desktop. Implemented cross-platform fetch fallbacks and native Rust file saving into the HEANG D.L folder on macOS and Windows.
-- **Desktop Local Media & Audio Preview Player**: Integrated Rust binary file byte reader (`tauri_read_file_bytes`) with dynamic Blob URL stream generation (`blob:http://...`) and platform-aware path resolution in `ui.js` & `player.js`, eliminating macOS WebKit local file restrictions, Android legacy path overrides (`/storage/emulated/0/`), and HTML5 player `▶ Error` states for smooth video and MP3 audio playback in History.
-- **Pinterest Dual-Server & PinDirect**: Pinterest now has two selectable servers — **Server 1 (PinDown)** for scraper-based downloads and **Server 2 (PinDirect)** for direct extraction from Pinterest HTML. Users can choose via the server selection dialog.
-- **PinDown Image Classification Fix**: Fixed a bug where the PinDown scraper incorrectly classified image downloads as `VIDEO` type. Now only URLs ending with `.mp4` are marked as video, so image pins properly download as images.
-- **Pinterest Multi-Image Support**: PinDirect mode extracts all available original-resolution images from a pin page, including gallery pins with multiple photos.
-- **Spotify SoundLoaders Server Replacement**: Replaced the non-functional SpotMate server with **SoundLoaders** as Spotify Server 2. SoundLoaders integrates Turnstile challenge bypass via `/api/userverify` for reliable track downloads.
-- **Android Storage Permission & `EACCES` Fix**: Resolved `Permission denied (EACCES)` errors on Android 13+ and restricted devices. Removed hard permission check aborts for deprecated `WRITE_EXTERNAL_STORAGE` and implemented an automatic multi-directory fallback chain (`EXTERNAL_STORAGE` → `DOCUMENTS` → `EXTERNAL`), ensuring downloads succeed seamlessly across all Android versions (Android 10-15).
-- **Explicit Web Scraper Names in Server Selection Pop-ups**: Standardized the server selection modal text across all multi-server platforms (TikTok, Instagram, YouTube, Twitter, Spotify, Pinterest) to explicitly label each server with its official web scraper provider name (e.g. TikTokIO / SnapTik, InDown / DownReels, YTMP3.gg / YTMP3.mobi, TweeLoad / TVD, SpotiDown / SoundLoaders, PinDown / PinDirect).
-- **Clean Filename Template Options & Default Setting**: Removed the redundant "Default" option and set **Title Only** (`title`) as the default filename template. Fixed a bug where filename options forcibly appended a 13-digit timestamp to downloaded files. "Title Only" now produces clean output (`Title.mp3`), while duplicate file collisions on disk automatically use clean incremental counters (`Title_1.mp3`, `Title_2.mp3`) across both Mobile and Desktop.
-- **Desktop Biometric & Haptics Guard**: Implemented platform-aware guards for Privacy Lock and Haptics (`window.Capacitor?.isNativePlatform()`). Mobile biometric authentication (`@capgo/capacitor-native-biometric`) is preserved for Android and iOS, while Desktop platforms (macOS/Windows) automatically bypass mobile biometric checks and hide mobile lock and haptic settings to prevent navigation freezes or unhandled plugin exceptions.
-- **Color Accent Setting Removed**: Removed the Color Accent dropdown setting from the UI to enforce HEANG D.L's minimal black-and-white design system.
-- **SpotMate Removed**: The SpotMate scraper has been fully removed from the codebase.
+HEANG D.L (HEANGG-dl) is a cross-platform media downloader and manager web app with optional native wrappers (Capacitor for mobile and Tauri for desktop). It provides a web UI for extracting media (images, audio, video) from various social / media platforms, includes a proxy server for referer bypassing, supports local downloads on mobile/desktop, PDF export for image galleries, and other convenience features.
 
-## Previous Updates v4.1.0
+This repository contains a lightweight Express proxy server (server.js), a static web frontend (public/), and tools to build an Android APK via GitHub Actions. The app is optimized to run as a Progressive Web App (PWA) and can be packaged using Capacitor (Android/iOS) or Tauri (desktop) for native integrations.
 
-- **Monotonic Floating Download Progress Toast & Zombie Timer Fix**: Refactored progress animation with strict monotonic state tracking (`updateProgress`) and global timer lifecycle management (`window._HEANG D.LActiveSimInterval`), ensuring progress width never jumps or animates backwards during retries, errors, or subsequent download attempts.
-- **Clean Single-Percentage UI**: Eliminated redundant percentage text from download action buttons and progress toast status footers. Clean percentage numbers are shown exclusively in the top-right progress toast badge (`.dpt-percent`).
-- **Responsive Toast Error Formatting & Overflow Guard**: Sanitized long raw API URLs/tokens in error messages and added multi-line word-wrap CSS rules (`word-break: break-word; overflow-wrap: anywhere`) to prevent error text overflowing toast borders.
-- **Silent Background Auto-Retry Engine**: Implemented seamless silent auto-retries for background network downloads. Retries occur silently in the background while holding the UI cleanly at 95% / `Downloading...`, eliminating status text flickering and progress bar jumps until successful completion or final error reporting.
-- **Douyin Multi-Image Photo Slideshow Fix**: Resolved an issue where Douyin photo posts only displayed a single image in the preview. Re-aligned item type mapping (`PHOTO`) between `douyin.js` and `ui.js`, enabling full horizontal swipe navigation across all photos in Douyin slideshows.
-- **Server Selection Backdrop Default (Server 1)**: Enhanced the server selection modal (`confirmOverlay._onDismissOutside`) so that if a user accidentally taps outside the modal box on the backdrop overlay, the app automatically defaults to **Server 1** to proceed smoothly without hanging.
-- **Comprehensive Japanese Localization (`ja`)**: Fully localized all previously untranslated Settings menus, missing toggle labels (**Completion Sound / 完了通知音**, **Header Quote / ヘッダー名言**, **Home Greeting / ホーム挨拶**), custom select dropdown selected text re-hydration (**Default / デフォルト**, **15 Seconds / 15秒**, **Classic / クラシック**, **TEST / テスト**), and Scraper Health diagnostics.
-- **Dynamic Device Platform Detection & Share App Fix**: Replaced hardcoded platform labels in `script.js` with dynamic `window.Capacitor?.getPlatform()` detection (`iOS`, `Android`, or `Web Browser`), ensuring accurate device diagnostics and bug reporting. Fixed duplicated repo links in `share-msg` across all 6 supported languages.
-- **Static Thumbnail Image Preview for Analyzed Un-Downloaded History Items**: Updated `showModal` in `ui.js` so that items in History that have only been analyzed (not downloaded yet) display a clean static cover thumbnail image instead of initiating a network streaming video/audio player. Interactive media playback is reserved exclusively for locally saved downloaded files.
-- **Fixed Local File Preview Resolution in History Modal**: Resolved a critical bug where the History detail modal would attempt to stream media from the network instead of playing locally saved files. The root cause was that `content://` URIs (returned by `Filesystem.getUri()`) were prioritized over the relative file path in both `ui.js` (`fileSrc` selection) and `player.js` (`cleanPath` resolution). Since WebView cannot properly handle `content://` schemas for media playback via `convertFileSrc`, playback silently failed and fell back to network streaming. Fixed by preferring `file.path` (relative path → `file://` → `_capacitor_file_`) in `showModal` and `videoUrl` (pre-converted `_capacitor_file_` URI) in `createVideoPlayer`.
-- **Redesigned Monochrome History Edit Mode & Action Header**: Re-architected History edit controls into a clean inline header layout (`.history-actions-wrapper`) with strict monochrome black-and-white styling (`EDIT`, `CLEAR ALL`, `DONE`, `×`), eliminating colored accents to match HEANG D.L's minimal design system.
-- **Modal Overlay State Fix (`confirmOverlay`)**: Resolved inline `style.display = "none"` state bugs triggered by scraper choice / cellular warning popups, ensuring `showConfirm()` explicitly sets `display = "flex"` so `CLEAR ALL` and individual delete confirmation modals remain 100% interactive before and after downloads.
-- **Adaptive Real-Time Download Progress Toast**: Upgraded floating bottom progress toast with smooth adaptive dynamic scaling (0% to 85% during active transfer, jumping instantly to 100% upon disk write completion) and real-time byte tracking, eliminating the progress freeze/stuck state at 92% on chunked media streams.
-- **Smart History Matcher (`HEANG D.L_file_saved`)**: Enhanced `HEANG D.L_file_saved` event listener to match history entries by `url`, `sourceUrl`, or fallback to the latest history item, ensuring `localFiles` and `localUri` references are ALWAYS saved into `HEANG D.L_history` in `localStorage`.
-- **Restored Android WebView Autoplay (`MainActivity.java`)**: Restored `settings.setMediaPlaybackRequiresUserGesture(false)` and `settings.setAllowFileAccess(true)` in `MainActivity.java`, enabling smooth programmatic autoplay of video previews in Android WebView.
-- **Capacitor Local HTTP URL Protection**: Protected `http://localhost` internal webserver URLs (`_capacitor_file_`) in `player.js` from unintended HTTPS rewrites while strictly enforcing `https://` upgrades for all remote media streams (TikTok, Instagram, Bilibili, etc.), eliminating `ERR_CONNECTION_REFUSED` local preview errors.
-- **Strict Monochrome Design Aesthetic**: Enforced a clean, premium black-and-white theme across all progress bars, latency diagnostic badges, edit controls, and toast notifications, eliminating noisy colored accents for visual consistency.
-- **Modular Scraper Suite Architecture (1-to-1 Platform Files)**: Deconstructed the monolithic `scrapers.js` (2,300+ lines) into clean, standalone ES modules inside `public/js/scrapers/`. Every platform has its dedicated scraper file (`tiktok.js`, `youtube.js`, `instagram.js`, `twitter.js`, `spotify.js`, `bilibili.js`, `pixiv.js`, `rednote.js`, `douyin.js`, `threads.js`, `pinterest.js`, `applemusic.js`, `facebook.js`, `bandcamp.js`), unified via `index.js` barrel export.
-- **Domain Application Managers**: Separated core app logic into dedicated manager modules (`authManager.js`, `historyManager.js`, `settingsManager.js`, `downloadManager.js`).
-- **Clean Subdirectory Project Structure**: Reorganized loose root JavaScript files into clear subdirectories (`public/js/vendor/`, `public/js/components/`, `public/js/i18n/`, `public/js/utils/`).
-- **Centralized HTTP Client & Defensive Response Parsing**: Extracted all HTTP network logic into a unified `scraperFetch` helper (`httpHelper.js`), automatically injecting active User-Agent presets, respecting custom request timeout limits, and defensively parsing HTML error pages (Cloudflare/Rate Limit blocks).
-- **Unified URL Extraction & Sanitization Engine**: Consolidated URL extraction and parameter stripping into `urlUtils.js`, standardizing protocol normalization (`https://`) and tracking parameter removal (`utm_*`, `igsh`, `s`, `t`, `si`) across all 14 platform scrapers.
-- **Redesigned Focused-Input Toast & Universal Settings Notifications**: Upgraded `.custom-toast` to mimic the focused URL input style (`1.5px solid var(--primary)` border with `4px 4px 0px var(--primary)` shadow and `105px` clearance above bottom nav), with haptic feedback vibration and localized toast notifications across all 30+ settings controls in English, Indonesian, Japanese, Spanish, Chinese, and Russian.
-- **Mobile Hardware Back Button & Double-Tap Exit Guard**: Integrated native Android back button event listener to dismiss open modals/subpages, navigate back to Home, and require double-tap back within 2 seconds to exit the app.
-- **Pixel-Perfect Settings UI Layout Polish**: Standardized Network & Performance settings dropdown row heights (`38px` fixed height) and truncated text labels to prevent multi-line text wrapping.
-- **New "Scraper Engine & Status" Settings Sub-Page**: Added a dedicated 6th settings sub-page allowing users to monitor real-time online/offline server health, active API engines, and round-trip response latency (ms) across all 14 supported platform scrapers. Features a clean, justified 2-column card layout displaying server endpoints (e.g. SnapTik, TikTokIO) with their respective latency badges (ms) positioned directly below each server title (Douyin moved after Spotify, filler words like "Engine/Extractor" removed).
-- **Enhanced Memory & Canvas Resource Cleanup**: Upgraded `getVideoThumbnail` with a centralized resource cleanup engine that revokes Object URLs (`blob:`), unbinds media event listeners, and resets `<canvas>` dimensions immediately upon completion or error.
+Table of Contents
+- Features
+- Repository layout
+- Quick start (web)
+- Development (frontend + server)
+- Running locally
+- Building Android APK (GitHub Actions)
+- Packaging for native (Capacitor / Tauri)
+- Configuration
+- Contributing
+- License
 
-## Supported Platforms
+Features
+- Extract and preview downloadable media (images, audio, video) from many platforms.
+- Gallery PDF export (client-side, with image optimization)
+- Native file downloads and progress UI (Capacitor / Tauri integrations)
+- Proxy endpoints to bypass referer restrictions when loading remote media
+- Smart filename templating and auto-folder organization
+- Data-saver mode (show placeholders instead of heavy previews)
+- Share button and handy UI utilities
 
-| Platform                                                                                                                                                              | Features               | Platform                                                                            | Features                             |
-| :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------- | :---------------------------------------------------------------------------------- | :----------------------------------- |
-| <img src="https://cdn.simpleicons.org/tiktok/000000" width="16" /> **TikTok**                                                                                         | Video (No WM) / Photos | <img src="https://cdn.simpleicons.org/instagram/E4405F" width="16" /> **Instagram** | Reels / Stories / Photos             |
-| <img src="https://cdn.simpleicons.org/youtube/FF0000" width="16" /> **YouTube**                                                                                       | MP4 Video / MP3 Audio  | <img src="https://cdn.simpleicons.org/x/000000" width="16" /> **Twitter (X)**       | HD Video / GIFs                      |
-| <img src="https://cdn.simpleicons.org/spotify/1DB954" width="16" /> **Spotify**                                                                                       | MP3 Audio              | <img src="https://cdn.simpleicons.org/pinterest/E60023" width="16" /> **Pinterest** | PinDown & PinDirect (Video / Images) |
-| <img src="https://cdn.simpleicons.org/applemusic/FA243C" width="16" /> **Apple Music**                                                                                | MP3 Audio              | <img src="https://cdn.simpleicons.org/facebook/1877F2" width="16" /> **Facebook**   | Reels / HD Video                     |
-| <img src="https://cdn.simpleicons.org/xiaohongshu/FF2442" width="16" /> **RedNote**                                                                                   | Photos / Videos        | <img src="https://cdn.simpleicons.org/threads/000000" width="16" /> **Threads**     | Video / Photos                       |
-| <img src="https://cdn.simpleicons.org/bilibili/00A1D6" width="16" /> **Bilibili**                                                                                     | Video / Audio (DASH)   | <img src="https://cdn.simpleicons.org/pixiv/0096FA" width="16" /> **Pixiv**         | Gallery / Ugoira to MP4              |
-| <img src="https://cdn.simpleicons.org/douyin/000000" width="16" style="display:none;" /><img src="https://cdn.simpleicons.org/tiktok/000000" width="16" /> **Douyin** | Video (No WM) / Photos | <img src="https://cdn.simpleicons.org/bandcamp/1DA1F2" width="16" /> **Bandcamp**   | Album / MP3 Track                    |
+Repository layout
+- .github/workflows/build-apk.yml - GitHub Actions workflow to build an Android APK
+- server.js - Express server that serves static frontend and mounts proxy routes
+- proxy.js (or ./proxy) - Proxy router used by the server (mounted at /api and fallback)
+- public/ - Frontend static site (HTML/CSS/JS). Main UI lives under public/js/
+- assets/ - Static assets used by the frontend
 
-## Built With
+Quick start (web)
+1. Clone the repository:
+   git clone https://github.com/henghengkh255-art/HEANGG-dl.git
+   cd HEANGG-dl
 
-- **JavaScript (ES6+)**: Core application logic and scraping engine.
-- **HTML5 & CSS3**: Custom design system without bloated frameworks.
-- **Tauri v2**: Ultra-lightweight desktop engine for macOS & Windows (.dmg, .app, .msi, .exe).
-- **CapacitorJS**: Native Android and iOS bridge for filesystem, share sheet, clipboard, and biometrics.
-- **pdf-lib**: Client-side PDF generation and bundling.
+2. Install dependencies:
+   npm install
 
-## Project Structure
+3. Start the server:
+   node server.js
 
-```
-heangdl/
-├── android/                    # Capacitor Android native project
-│   ├── app/src/main/           # Android manifest, resources, assets
-│   └── gradle/                 # Gradle wrapper & build config
-├── ios/                        # Capacitor iOS Xcode workspace
-│   └── App/                    # iOS Xcode project, Info.plist, and Pods
-├── src-tauri/                  # Tauri v2 Desktop Rust backend & configuration
-│   ├── capabilities/           # Application capabilities & permissions
-│   ├── src/                    # Rust native HTTP & file commands (tauri_http_request, tauri_download_file)
-│   └── tauri.conf.json         # Desktop configuration & window bounds
-├── assets/                     # Screenshots & branding assets
-├── public/
-│   ├── css/
-│   │   └── style.css           # Design system & all component styles
-│   ├── js/
-│   │   ├── components/         # Custom UI components (HEANG D.LPlayer)
-│   │   │   └── player.js
-│   │   ├── i18n/               # Multi-language translations (EN/ID/JA/ES/ZH/RU)
-│   │   │   └── index.js
-│   │   ├── modules/            # App managers (auth, history, settings, download)
-│   │   │   ├── authManager.js
-│   │   │   ├── downloadManager.js
-│   │   │   ├── historyManager.js
-│   │   │   └── settingsManager.js
-│   │   ├── scrapers/           # Standalone scraper modules (14 platforms)
-│   │   │   ├── applemusic.js
-│   │   │   ├── bandcamp.js
-│   │   │   ├── bilibili.js
-│   │   │   ├── douyin.js
-│   │   │   ├── facebook.js
-│   │   │   ├── httpHelper.js
-│   │   │   ├── index.js
-│   │   │   ├── instagram.js
-│   │   │   ├── pinterest.js
-│   │   │   ├── pixiv.js
-│   │   │   ├── rednote.js
-│   │   │   ├── spotify.js
-│   │   │   ├── threads.js
-│   │   │   ├── tiktok.js
-│   │   │   ├── twitter.js
-│   │   │   └── youtube.js
-│   │   ├── utils/              # Helpers, URL sanitization & scraper health
-│   │   │   ├── index.js
-│   │   │   ├── scraperHealth.js
-│   │   │   └── urlUtils.js
-│   │   ├── vendor/             # Third-party libraries (pdf-lib)
-│   │   │   └── pdf-lib.min.js
-│   │   ├── script.js           # Core application init & lifecycle
-│   │   └── ui.js               # Media slider, results UI, and rendering logic
-│   └── index.html              # Single-page application entry point
-├── capacitor.config.json       # Capacitor configuration
-├── package.json                # Dependencies & scripts
-├── .gitignore
-├── LICENSE
-└── README.md
-```
+4. Open the web app in your browser:
+   http://localhost:3000
 
-## Key Features
+Development
+- Frontend
+  - The frontend source is served from `public/`. Edit JS under `public/js/` and static assets under `public/`.
+  - The UI implements media preview, download handling, PDF export and interactions with native layers when running under Capacitor or Tauri.
 
-- **Multi-Platform Support**: High-quality downloads from TikTok (No Watermark, HD Video, MP3 & Photo Slideshows), Instagram (Reels/Posts/Photos), YouTube, Twitter (X), Spotify, Pinterest, Apple Music, Facebook, **Threads**, **Bandcamp**, **Pixiv** (R-18/R-18G), **Bilibili** (DASH), **Douyin** (No WM), and **RedNote (Xiaohongshu)**.
-- **Live Media Previews**: View images, play videos, and listen to audio directly within the app before downloading.
-- **Standalone PDF Document Export**: Convert image galleries from any platform into high-quality PDF files for offline viewing.
-- **Private History Manager**: Downloaded files are managed internally with local playback support and offline badge detection.
-- **Share Intent Integration**: Send links directly to HEANG D.L from other apps via the system Share menu.
-- **Auto Clipboard Paste**: Automatically detects and pastes links from clipboard when you return to the app.
-- **Auto Update Check**: Checks for new versions on startup via GitHub Releases and shows a popup modal when an update is available.
-- **Hardened Biometric Privacy Lock**: Secure your history and settings menu with native fingerprint, FaceID, or TouchID authentication, featuring automatic background re-locking.
-- **Multi-Language Support**: Fully localized in English, Indonesian, and Japanese (`en`, `id`, `ja`).
-- **Export/Import Data**: Full data portability — backup and restore your history, settings, and paths as a JSON file.
-- **Intelligent Error Handling**: Real-time feedback for IP blocks, API format changes, or network issues via premium Toast notifications.
-- **Premium Minimalist UI**: A distraction-free glassmorphism interface with smooth transitions, dark mode, and accent colors.
+- Server / Proxy
+  - The Express server is defined in `server.js`. Proxy routes are mounted from `./proxy` and exposed under `/api` and directly as fallback.
+  - The proxy endpoints help bypass cross-origin / referer restrictions and are used by the web client when running in browser-only environments.
 
-## Security & Safety Notice
+Running locally (detailed)
+1. Ensure Node.js (v16+) is installed. Recommended Node.js 18+ or 20 for parity with CI.
+2. Install dependencies: `npm install`
+3. Start the server: `node server.js`
+4. By default the app listens on port 3000 (configurable via `PORT` environment variable).
 
-HEANG D.L is **100% open-source, ad-free, and contains zero malware, spyware, or trackers**. All network requests and file downloads run locally on your device without external analytics servers.
+Building Android APK (GitHub Actions)
+There's a ready GitHub Actions workflow at `.github/workflows/build-apk.yml` that automates building an Android debug APK. Key points:
+- Triggers: push/pull_request to `main` or `master`, and manual `workflow_dispatch`.
+- Installs Node.js 20, Java (Zulu) 21, Android SDK, runs `npm install`, initializes Capacitor if `android/` is missing, syncs, generates icons, then runs Gradle `./gradlew assembleDebug`.
+- The produced APK is copied to `output/HEANG_DL.apk` and uploaded as an artifact named `HEANG_DL_Android_APK` with 30 days retention.
 
-> [!TIP]
-> **Doubtful or concerned about false-positive security warnings?**  
-> Because HEANG D.L release binaries (`.apk`, `.dmg`, `.exe`, `.ipa`) are open-source builds compiled without expensive commercial enterprise signing certificates, some OS security software or browsers may display standard false-positive warnings.  
-> If you have any doubts, you can upload and scan any release file directly on **[VirusTotal](https://www.virustotal.com/)** before installing!
+To run locally (Capacitor Android build):
+1. Ensure Java JDK and Android SDK are installed and ANDROID_HOME / related environment variables are set.
+2. Install dependencies and add Android if needed:
+   npm install
+   npx cap add android
+   npx cap sync android
+3. Build the APK from the android directory (or use Android Studio):
+   cd android
+   chmod +x gradlew
+   ./gradlew assembleDebug
 
-> [!NOTE]
-> **macOS Gatekeeper Warning ("HEANG D.L" is damaged and can't be opened):**  
-> When downloading the `.dmg` or `.app` via web browsers (Brave, Safari, Chrome), macOS flags unnotarized internet downloads with a quarantine attribute (`com.apple.quarantine`).  
-> To open HEANG D.L smoothly on macOS:
-> 1. Run in Terminal: `sudo xattr -cr /Applications/HEANG D.L.app`  
-> 2. Or **Right-Click** (Control + Click) `HEANG D.L.app` in Finder → Select **Open** → Click **Open**.
+Packaging for native (Capacitor / Tauri)
+- Capacitor
+  - The web app supports integration with Capacitor for mobile builds. Capacitor file paths (e.g. `_capacitor_file_` markers) and `window.Capacitor` checks are used across frontend code.
+  - Typical flow: `npm install`, `npx cap add android` (or ios), `npx cap sync`, then build with platform tooling.
 
-> [!NOTE]
-> **Android Play Protect Warning:**  
-> When installing the `.apk` manually (sideloading outside Google Play Store), Play Protect may display a prompt. Tap **"More Details"** → **"Install Anyway"**.
+- Tauri
+  - There are client-side codepaths to invoke Tauri helpers when available (see ui.js). To package with Tauri, follow Tauri docs: install Rust toolchain and Tauri prerequisites, then use `cargo tauri build` after wiring up the Tauri project.
 
-## How to Use
+Configuration / Environment
+- PORT - Change the server port (default: 3000)
+- The frontend uses localStorage keys to control many behaviors (data-saver, autoplay, filename template, auto-folder, download paths, etc.). See UI settings in the app for toggles.
 
-1. Copy a link from a supported platform or Share it directly to HEANG D.L.
-2. Use the **Paste** button or let the auto-detection handle the link.
-3. Tap **Analyze** to verify the content.
-4. Preview the media (swipe through carousels if available).
-5. Choose your format and tap **Download**.
-6. Files are saved to your internal history for offline access.
+Security & Privacy
+- The proxy endpoints are intended to assist with referer-bypassing for media preview/download. If you deploy the proxy publicly, be mindful of abuse — consider rate-limiting, authentication, and logging controls.
+- The app may access and write files to device storage when running as native app. Be careful with permissions and user data.
 
-## For Developers
+Troubleshooting
+- If preview images or video don't load, the app may attempt to route requests through the proxy or use a third-party image proxy (weserv.nl). Check the server logs and browser console for errors.
+- Android builds may fail if the Android SDK, build-tools, or Java versions are incompatible. The workflow uses Java 21 and modern Android SDK provided by the official setup action.
 
-HEANG D.L is built using Capacitor and Vanilla JS for high performance.
+Contributing
+Contributions are welcome! Suggested workflow:
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feat/my-change`
+3. Make changes, test locally
+4. Open a pull request with a clear description of the change
 
-- **On Android & iOS**: Uses `CapacitorHttp` to bypass CORS and download directly from the device IP. Files are saved to local device storage and accessible via the **Files app** (`On My iPhone/HEANG D.L`) on iOS.
-- **On Web**: Preview mode only — runs directly in the browser with limited functionality.
+Please include tests or manual test instructions when relevant.
 
-### Building the APK
-
-```bash
-# 1. Sync Capacitor with Android
-npx cap sync android
-
-# 2. Build the debug APK
-cd android && ./gradlew assembleDebug
-
-# 3. The APK is output at:
-#    android/app/build/outputs/apk/debug/HEANG D.L v{VERSION}.apk
-```
-
-For a release APK, first generate a signing keystore (one-time):
-
-```bash
-keytool -genkey -v -keystore android/app/release.keystore -alias heangdl \
-  -keyalg RSA -keysize 2048 -validity 10000 \
-  -storepass android123 -keypass android123 \
-  -dname "CN=HEANG D.L, OU=Development, O=HEANG D.LApp, L=Unknown, ST=Unknown, C=ID"
-```
-
-Then add `signingConfigs` block to `android/app/build.gradle`:
-
-```groovy
-android {
-    signingConfigs {
-        release {
-            storeFile file('release.keystore')
-            storePassword 'android123'
-            keyAlias 'heangdl'
-            keyPassword 'android123'
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-            // ...
-        }
-    }
-}
+Acknowledgements
+- The app integrates several common approaches for referer bypass, client-side PDF creation (PDFLib), and native bridging via Capacitor/Tauri.
 ```
 
 Build the signed release APK:
@@ -264,64 +153,7 @@ cd android && ./gradlew assembleRelease
 
 Output at: `android/app/build/outputs/apk/release/HEANG D.L v{VERSION}.apk`
 
-### Running & Building for Desktop (macOS & Windows)
-
-HEANG D.L uses **Tauri v2** for lightweight, high-performance desktop apps on macOS (.dmg, .app) and Windows (.msi, .exe).
-
-#### Development Mode
-
-```bash
-npm run tauri:dev
-```
-
-#### Building Release Installers
-
-```bash
-npm run tauri:build
-```
-
-- **macOS Output**: `src-tauri/target/release/bundle/dmg/HEANG D.L_4.2.0_aarch64.dmg` & `HEANG D.L.app`
-- **Windows Output**: `src-tauri/target/release/bundle/msi/HEANG D.L_4.2.0_x64_en-US.msi` & `.exe`
-
-### Running & Building for iOS
-
-#### Running on Simulator or Device
-
-```bash
-# 1. Sync web assets & iOS CocoaPods dependencies
-npx cap sync ios
-
-# 2. Open the Xcode workspace
-npx cap open ios
-
-# 3. Select target (iPhone Simulator or connected iOS device) and press Run (Cmd + R)
-```
-
-#### Building Unsigned IPA (For Sideloading/Distribution)
-
-If you do not have an iPhone connected or a paid Apple Developer Account, you can build a generic unsigned `.ipa` for distribution via the command line:
-
-```bash
-# 1. Sync assets
-npx cap sync ios
-
-# 2. Compile target for generic iOS device without code signing
-xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath build/HEANG D.L.xcarchive archive CODE_SIGNING_ALLOWED=NO
-
-# 3. Package compiled app bundle into a Payload folder and Zip to IPA
-mkdir -p Payload && cp -r build/HEANG D.L.xcarchive/Products/Applications/App.app Payload/ && zip -r "HEANG D.L v4.2.0.ipa" Payload && rm -rf Payload build
-```
-
-This outputs `HEANG D.L v4.2.0.ipa` in your project root directory, ready to be sideloaded via AltStore, Sideloadly, Scarlet, or TrollStore.
-
-## iOS Sideloading Guide
-
-Since HEANG D.L is client-side only and not distributed on the Apple App Store, iOS users can install `HEANG D.L v4.2.0.ipa` using one of the following sideloading methods:
-
-- **AltStore / Sideloadly**: Best for all iOS versions. Requires a PC/Mac for initial installation, and app signatures need to be refreshed every 7 days (free personal Apple ID).
-- **TrollStore**: Best for compatible iOS versions. Installs permanently, requires no computer after setup, and does not expire.
-- **Scarlet / Esign**: Directly install on-device without a PC using enterprise/public developer certificates.
-
+### Running & Building 
 ---
 
 Developed with ❤️ by [Mengheang]](https://t.me/mengheang25).
