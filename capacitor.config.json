@@ -1,0 +1,13 @@
+﻿{
+  "appId": "com.heangdl.downloader",
+  "appName": "Heang D.L",
+  "webDir": "public",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "CapacitorCookies": {
+      "enabled": true
+    }
+  }
+}
