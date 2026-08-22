@@ -68,8 +68,8 @@ Repository layout
 
 Quick start (web)
 1. Clone the repository:
-   git clone https://github.com/henghengkh255-art/HEANGG-dl.git
-   cd HEANGG-dl
+   git clone https://github.com/Mengheang25/heangdl.git
+   cd heangdl
 
 2. Install dependencies:
    npm install
